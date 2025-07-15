@@ -35,12 +35,14 @@ def test_connection(
     parity=parity, stopbits=stopbits, bytesize=bytesize
 )
     return {
-        "success": success,
-        "mode": mode,
-        "host": host,
-        "serial_port": serial_port,
-        "unit_id": unit_id
-    }
+    "success": success,
+    "mode": mode,
+    "host": host,
+    "port": port,
+    "serial_port": serial_port,
+    "unit_id": unit_id,
+
+}
 
 @app.get("/", response_class=HTMLResponse)
 def root(request: Request):
