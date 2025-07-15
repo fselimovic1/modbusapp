@@ -1,0 +1,49 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+env/
+.venv/
+ENV/
+
+# VSCode / PyCharm / editor configs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Environment variables
+.env
+.env.*
+
+# Logs and debug
+*.log
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Testing
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+.pytest_cache/
+
+# Packaging
+build/
+dist/
+*.egg-info/
+
+# PyInstaller output
+*.spec
+
+# Jupyter notebooks
+.ipynb_checkpoints/
+
+# FastAPI/OpenAPI generated files
+openapi.json

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Modbus Connection Tester</title>
+    <script>
+        function toggleFields() {
+            const mode = document.getElementById("mode").value;
+            document.getElementById("tcpFields").style.display = mode === "tcp" ? "block" : "none";
+            document.getElementById("rtuFields").style.display = mode === "rtu" ? "block" : "none";
+        }
+
+        async function testConnection() {
+            // Reset results
+            const mode = document.getElementById("mode").value;
+            let url = `/test_connection?mode=${mode}`;
+
+            if (mode === "tcp") {
+                const host = document.getElementById("host").value;
+                const unit_id = document.getElementById("unit_id_tcp").value;
+                const port = document.getElementById("port").value;
+                url += `&host=${host}&port=${port}`;
+                url += `&unit_id=${unit_id}`;
+            } else {
+                const serial = document.getElementById("serial_port").value;
+                const unit_id = document.getElementById("unit_id_rtu").value;
+                const baud = document.getElementById("baudrate").value;
+                const parity = document.getElementById("parity").value;
+                const stopbits = document.getElementById("stopbits").value;
+                const bytesize = document.getElementById("bytesize").value;
+
+                url += `&serial_port=${serial}&unit_id=${unit_id}&baudrate=${baud}&parity=${parity}&stopbits=${stopbits}&bytesize=${bytesize}`;
+            }
+
+            const res = await fetch(url);
+            const data = await res.json();
+            
+            const result = document.getElementById("result");
+            if (data.success) {
+                result.innerHTML = `<span style='color:green;'>✅ Connected via ${data.mode.toUpperCase()} to ${data.host}</span>`;
+            } else {
+                result.innerHTML = `<span style='color:red;'>❌ Failed to connect via ${data.mode.toUpperCase()} to ${data.host}</span>`;
+            }
+        }
+    </script>
+</head>
+<body onload="toggleFields()">
+    <h2>Test Modbus Connection</h2>
+
+    <label>Mode: 
+        <select id="mode" onchange="toggleFields()">
+            <option value="tcp">Modbus TCP</option>
+            <option value="rtu">Modbus RTU</option>
+        </select>
+    </label><br/><br/>
+
+    <div id="tcpFields">
+        <label>IP Address: <input id="host" value="192.168.200.5"></label><br/>
+        <label>Port: <input id="port" value="502"></label><br/>
+        <label>Unit ID: <input id="unit_id_tcp" value="1"></label><br/>
+    </div>
+
+    <div id="rtuFields" style="display:none;">
+        <label>Serial Port: <input id="serial_port" value="COM3"></label><br/>
+        <label>Baudrate: <input id="baudrate" value="9600"></label><br/>
+        <label>Unit ID: <input id="unit_id_rtu" value="1"></label><br/>
+        <label>Parity: 
+            <select id="parity">
+                <option value="N">None</option>
+                <option value="E">Even</option>
+                <option value="O">Odd</option>
+            </select>
+        </label><br/>
+        <label>Stop Bits: 
+            <select id="stopbits">
+                <option value="1">1</option>
+                <option value="2">2</option>
+            </select>
+        </label><br/>
+        <label>Byte Size: 
+            <select id="bytesize">
+                <option value="8">8</option>
+                <option value="7">7</option>
+            </select>
+        </label><br/>
+    </div>
+    <button onclick="testConnection()">Test</button>
+    <p id="result" style="margin-top: 1em; font-weight: bold;"></p>
+
+    <button onclick="location.href='/'" style="padding: 10px 20px; font-size: 16px; text-align: center">
+        BACK
+    </button>
+</body>
+</html>
