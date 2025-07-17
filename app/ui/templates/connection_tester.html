@@ -8,9 +8,22 @@
             document.getElementById("tcpFields").style.display = mode === "tcp" ? "block" : "none";
             document.getElementById("rtuFields").style.display = mode === "rtu" ? "block" : "none";
         }
+        function fetchSerialPorts() {
+            fetch("/list_serial_ports")
+                .then(res => res.json())
+                .then(data => {
+                    const dropdown = document.getElementById("serial_port");
+                    dropdown.innerHTML = "";
+                    data.forEach(item => {
+                        const option = document.createElement("option");
+                        option.value = item.port;
+                        option.text = `${item.port} - ${item.description}`;
+                        dropdown.appendChild(option);
+                    });
+                });
+        }
 
         async function testConnection() {
-            // Reset results
             const mode = document.getElementById("mode").value;
             let url = `/test_connection?mode=${mode}`;
 
@@ -33,6 +46,7 @@
 
             const res = await fetch(url);
             const data = await res.json();
+
 
             const result = document.getElementById("result");
             if (data.success) {
@@ -62,9 +76,8 @@
         }
     </script>
 </head>
-<body onload="toggleFields()">
+<body onload="toggleFields(), fetchSerialPorts()">
     <h2>Test Modbus Connection</h2>
-
     <label>Mode: 
         <select id="mode" onchange="toggleFields()">
             <option value="tcp">Modbus TCP</option>
@@ -79,8 +92,17 @@
     </div>
 
     <div id="rtuFields" style="display:none;">
-        <label>Serial Port: <input id="serial_port" value="COM3"></label><br/>
-        <label>Baudrate: <input id="baudrate" value="9600"></label><br/>
+        <label>Serial Port: 
+            <select id="serial_port"></select>
+        </label><br/>
+        <label>Baudrate: 
+            <select id="baudrate">
+                <option value="2400">2400</option>
+                <option value="4800">4800</option>
+                <option value="9600">9600</option>
+                <option value="19200">19200</option>
+            </select>
+        </label><br/>
         <label>Unit ID: <input id="unit_id_rtu" value="1"></label><br/>
         <label>Parity: 
             <select id="parity">

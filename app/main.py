@@ -6,6 +6,8 @@ from fastapi.templating import Jinja2Templates
 from fastapi.requests import Request
 from fastapi.staticfiles import StaticFiles
 from app.core.modbus_client import read_modbus_data, test_modbus_connection
+from serial.tools import list_ports
+from fastapi.responses import JSONResponse
 import logging
 
 logging.basicConfig(
@@ -17,6 +19,11 @@ app = FastAPI()
 templates = Jinja2Templates(Path(__file__).resolve().parent/ "ui" / "templates")
 app.mount("/static", StaticFiles(directory=Path(__file__).resolve().parent / "ui" / "static"), name="static")
 
+@app.get("/list_serial_ports")
+def list_serial_ports():
+    ports = list_ports.comports()
+    result = [{"port": p.device, "description": p.description} for p in ports]
+    return JSONResponse(content=result)
 
 @app.get("/test_connection")
 def test_connection(
@@ -52,6 +59,9 @@ def root(request: Request):
 def dashboard(request: Request):
     return templates.TemplateResponse("connection_tester.html", {"request": request})
 
+@app.get("/modbusrtu_inspector", response_class=HTMLResponse)
+def dashboard(request: Request):
+    return templates.TemplateResponse("modbusrtu_inspector.html", {"request": request})
 
 @app.get("/read")
 def read_registers(
