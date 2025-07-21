@@ -21,6 +21,10 @@ app.mount("/static", StaticFiles(directory=Path(__file__).resolve().parent / "ui
 
 @app.get("/list_serial_ports")
 def list_serial_ports():
+    """
+        Docstrings test! 
+        This function reads and lists all serial ports that I currently open.
+    """
     ports = list_ports.comports()
     result = [{"port": p.device, "description": p.description} for p in ports]
     return JSONResponse(content=result)
@@ -37,7 +41,7 @@ def test_connection(
     bytesize: int = 8,
     unit_id: int = 1
 ):
-    success = test_modbus_connection(
+    success, msg = test_modbus_connection(
     mode, host, port, serial_port, baudrate, unit_id=unit_id,
     parity=parity, stopbits=stopbits, bytesize=bytesize
 )
@@ -48,7 +52,7 @@ def test_connection(
     "port": port,
     "serial_port": serial_port,
     "unit_id": unit_id,
-
+    "message": msg
 }
 
 @app.get("/", response_class=HTMLResponse)

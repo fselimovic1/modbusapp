@@ -1,6 +1,6 @@
 from pymodbus.exceptions import ModbusIOException
 from pymodbus.client.sync import ModbusTcpClient, ModbusSerialClient
-ZERO_ADDRESS = 10;
+ZERO_ADDRESS = 0;
 import logging
 logging.basicConfig(
     level=logging.INFO,
@@ -14,7 +14,7 @@ def try_modbus_operations(client, unit_id):
             response = method(ZERO_ADDRESS, count=1, unit=unit_id)
             print(response)
             if response.encode():
-                return True;
+                return True, "Success!";
         except Exception:
             continue
     return False, "No valid Modbus response received"
@@ -34,14 +34,10 @@ def test_modbus_connection(mode, host=None, port=502, serial_port=None, baudrate
                 bytesize=bytesize,
                 timeout=0.1
             )
-        else:
-            return False
-        print("Connect tryout!")
         if not client.connect():
-            return False
-        print("It passed!")
+            return False, "Connection error!"
         ok, msg = try_modbus_operations(client, unit_id=unit_id)
-        return ok
+        return ok, msg
 
     except Exception as e:
         return False, f"Exception occurred: {str(e)}"
@@ -54,7 +50,6 @@ def read_modbus_data(host, port, address, count, function):
     client = ModbusTcpClient(host, port)
     if not client.connect():
         return {"error": f"Could not connect to {host}:{port}"}
-    
     try:
         if function == "coils":
             response = client.read_coils(address, count, unit=1)
@@ -66,11 +61,9 @@ def read_modbus_data(host, port, address, count, function):
             response = client.read_holding_registers(address, count, unit=1)
         else:
             return {"error": "Invalid function"}
-
         if response.isError():
             return {"error": str(response)}
         return {"values": response.bits if hasattr(response, 'bits') else response.registers}
-
     except ModbusIOException as e:
         return {"error": str(e)}
     finally:

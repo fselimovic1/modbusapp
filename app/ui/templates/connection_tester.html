@@ -26,8 +26,7 @@
                 }
 
                 portGroup.style.display = "block";
-                noPortsMsg.style.display = "none";
-
+                noPortsMsg.style.display = "none";                
                 data.forEach(item => {
                     const option = document.createElement("option");
                     option.value = item.port;
@@ -60,9 +59,9 @@
 
                 url += `&serial_port=${serial}&unit_id=${unit_id}&baudrate=${baud}&parity=${parity}&stopbits=${stopbits}&bytesize=${bytesize}`;
             }
-
             const res = await fetch(url);
             const data = await res.json();
+            console.log("Hallo")
             const result = document.getElementById("result");
             if (data.success) {
                 showModal(
